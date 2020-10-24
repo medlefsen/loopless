@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require_relative '../lib/loopless'
+
+exec Loopless.binary_path, *ARGV
