@@ -3,18 +3,41 @@ loopless
 
 A small CLI utility and Ruby library for creating and editing bootable disk images without loopback mounts or root.
 
-Currently supported on Linux and Mac OS X.
-
 Install
 -------
 
-Loopless can be installed via rubygems: 
+Download the binary for the latest release:
 
-    gem install loopless
+    curl -fsSLO https://github.com/medlefsen/loopless/releases/latest/download/loopless-x86_64-linux
+    chmod +x loopless-x86_64-linux
+    sudo install -m 0755 loopless-x86_64-linux /usr/local/bin/loopless
 
-Which will install the ruby library and also install a loopless executable
+Releases are listed at https://github.com/medlefsen/loopless/releases, and each
+one also carries a tarball with this README and the license text.
 
-The loopless command line binaries for each platform can also be downloaded from the `linux` and `mac` directories and run directly.
+Builds are produced in a `debian:bookworm` container, so the binary needs glibc
+2.36 or newer (Debian 12, Ubuntu 22.04, Fedora 37 and later).
+
+Building from source
+--------------------
+
+The build fetches and compiles pinned copies of lwext4, Syslinux, gptfdisk and
+e2fsprogs' libuuid, so it is done inside a container to keep it reproducible:
+
+    ./build.sh      # builds build_linux/loopless
+    ./test.sh       # smoke test against a scratch disk image
+    ./package.sh    # produces release artifacts in dist/
+
+Set `CONTAINER_ENGINE=docker` if you would rather not use podman. To build
+against the host toolchain instead, install the dependencies listed in
+`install-build-deps.sh` and run `./do-build.sh build_linux` directly.
+
+Ruby library
+------------
+
+The `ruby/` directory holds a Ruby binding that shells out to the binary. The
+`loopless` gem on rubygems.org is no longer updated; released versions are
+published as binaries on GitHub instead.
 
 Synopsis
 --------

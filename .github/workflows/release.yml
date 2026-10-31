@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: debian:bookworm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches VERSION
+        run: |
+          set -euo pipefail
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          version="$(< VERSION)"
+          if [ "$tag" != "v$version" ]; then
+            echo "::error::tag $tag does not match VERSION $version (expected v$version)"
+            exit 1
+          fi
+
+      - name: Install build dependencies
+        run: ./install-build-deps.sh
+
+      - name: Build
+        run: ./do-build.sh build_linux
+
+      - name: Smoke test
+        run: ./test.sh
+
+      - name: Package
+        run: ./package.sh
+
+      - name: Add an unversioned copy for releases/latest/download
+        run: cp "dist/loopless-$(< VERSION)-x86_64-linux" dist/loopless-x86_64-linux
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  release:
+    needs: build
+    # The release step runs on the host runner, which already has the gh CLI.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          gh release create "$tag" \
+            --title "loopless $tag" \
+            --generate-notes \
+            dist/*
