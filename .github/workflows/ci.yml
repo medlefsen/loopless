@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     # Pinned so CI matches ./build.sh and the glibc floor stays predictable.
     container: debian:bookworm
+    # The images resolve the default shell to `sh`, which rejects
+    # `set -o pipefail` and other bashisms used below.
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 

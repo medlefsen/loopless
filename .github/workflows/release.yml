@@ -16,6 +16,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: debian:bookworm
+    # The images resolve the default shell to `sh`, which rejects
+    # `set -o pipefail` and other bashisms used below.
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
