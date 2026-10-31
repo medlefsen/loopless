@@ -1,0 +1,44 @@
+{
+  "name": "Loopless C++ Development",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-debian-12",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true,
+      "username": "vscode",
+      "userUid": "automatic",
+      "userGid": "automatic"
+    }
+  },
+
+  "customizations": {
+    "jetbrains": {
+      "backend": "CLion"
+    },
+    "vscode": {
+      "settings": {
+        "cmake.configureOnOpen": false
+      },
+      "extensions": [
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "twxs.cmake"
+      ]
+    }
+  },
+  "runArgs": [
+    '--userns=keep-id'
+  ],
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y autoconf automake libtool pkg-config xxd nasm uuid-dev",
+
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workdir,type=bind,consistency=cached"
+  ],
+
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+
+  "remoteUser": "vscode"
+}

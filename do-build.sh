@@ -1,33 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Configures and builds loopless into the given build directory.
+# Expects the build dependencies from install-build-deps.sh to be present.
+set -euo pipefail
 
-if [ -z "$1" ]
-then
-  exit 1
-fi
+build_dir="${1:?usage: do-build.sh BUILD_DIR}"
 
-build_dir="$1"
+cd "$(dirname "$0")"
+src_dir="$PWD"
 
-if [ ! -e "$build_dir" ]
-then
-  mkdir "$build_dir"
-fi
-
+mkdir -p "$build_dir"
 cd "$build_dir"
 
-if [ "$CROSS_TRIPLE" == x86_64-apple-darwin14 ]
-then
-  export CC=x86_64-apple-darwin14-cc
-  CMAKE_COMMAND=x86_64-apple-darwin14-cmake
-else
-  CMAKE_COMMAND=cmake
-fi
-
-CMAKE_ARGS=(-D CMAKE_CMD="$CMAKE_COMMAND")
-
-if [ "$CROSS_TRIPLE" != x86_64-linux-gnu ]
-then
-  CMAKE_ARGS+=(-D CONFIGURE_ARGS="--host;$CROSS_TRIPLE" )
-fi
-
-${CMAKE_COMMAND} "${CMAKE_ARGS[@]}" ..
+cmake -D CMAKE_CMD=cmake -D CMAKE_BUILD_TYPE=Release "$src_dir"
 make VERBOSE=1

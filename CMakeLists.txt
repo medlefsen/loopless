@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(loopless)
 enable_language(C)
 
@@ -9,7 +9,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 ExternalProject_Add(
         Lwext4
         GIT_REPOSITORY https://github.com/gkostka/lwext4.git
-        GIT_TAG master
+        GIT_TAG 58bcf89a121b72d4fb66334f1693d3b30e4cb9c5
         CMAKE_COMMAND ${CMAKE_CMD}
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
         INSTALL_COMMAND ""
@@ -25,7 +25,7 @@ set(BINARY_BUILD_PREFIX CACHE STRING "Build command for Syslinux")
 
 ExternalProject_Add(
         Syslinux
-        GIT_REPOSITORY git://repo.or.cz/syslinux.git
+        GIT_REPOSITORY https://repo.or.cz/syslinux.git
         GIT_TAG bf6db5b4
         BUILD_IN_SOURCE 1
        # UPDATE_COMMAND git reset --hard
@@ -52,7 +52,7 @@ add_custom_command(OUTPUT gptmbr.c
 
 ExternalProject_Add(
         Gptfdisk
-        GIT_REPOSITORY git://git.code.sf.net/p/gptfdisk/code
+        GIT_REPOSITORY https://git.code.sf.net/p/gptfdisk/code
         GIT_TAG 846a9e30cda88f75369d175f2f549cad3ea15db2
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ""
